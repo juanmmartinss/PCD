@@ -76,6 +76,8 @@ int main(){
         Tabuleiro_1 = Tabuleiro_2;
         Tabuleiro_2 = aux;
     }
+
+    
     
     
 
