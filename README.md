@@ -1,3 +1,3 @@
 # PCD
 
-Materia de programacao concorrente e distribuida
+Matéria de programação concorrente e distribuída
