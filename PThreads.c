@@ -20,9 +20,8 @@ int main(){
     float **Tabuleiro_2;
     Aloca_Memoria_Matriz(&Tabuleiro_2);// alocacao de matriz dinamicamente
 
-    int lin = 1, col = 1; // linha e coluna do tabuleiro
+    int lin = 1, col = 1;
 
-    // Glider
     Tabuleiro_1[lin][col+1] = 1.0;
     Tabuleiro_1[lin+1][col+2] = 1.0;
     Tabuleiro_1[lin+2][col] = 1.0;
@@ -54,7 +53,7 @@ int main(){
         for (int j = 0; j < N; j++){
             for (int k = 0; k < N; k++){
                 int vizinhos = getNeighbors(Tabuleiro_1, j, k);
-                if (Tabuleiro_1[j][k] == 1){
+                if (Tabuleiro_1[j][k] != 0){
                     if (vizinhos < 2){
                         Tabuleiro_2[j][k] = 0;
                     }
