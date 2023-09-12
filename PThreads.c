@@ -4,7 +4,7 @@
 
 #define N 2048
 
-void Aloca_Memoria_Matriz(float **matriz);
+void Aloca_Memoria_Matriz(float ***matriz);
 void Desaloca_Memoria_Matriz(float **matriz);
 int getNeighbors(float** grid, int i, int j);
 float get_Values_Neighbors(float** grid, int i, int j);
@@ -16,9 +16,9 @@ int main(){
     int Conta_celulas_vivas = 0; // contador de celulas vivas
 
     float **Tabuleiro_1;
-    Aloca_Memoria_Matriz(Tabuleiro_1);// alocacao de matriz dinamicamente
+    Aloca_Memoria_Matriz(&Tabuleiro_1);// alocacao de matriz dinamicamente
     float **Tabuleiro_2;
-    Aloca_Memoria_Matriz(Tabuleiro_2);// alocacao de matriz dinamicamente
+    Aloca_Memoria_Matriz(&Tabuleiro_2);// alocacao de matriz dinamicamente
 
     int lin = 1, col = 1; // linha e coluna do tabuleiro
 
@@ -30,6 +30,8 @@ int main(){
     Tabuleiro_1[lin+2][col+2] = 1.0;
 
     //R-pentomino
+    lin = 10, col = 30;
+    
     Tabuleiro_1[lin][col+1] = 1.0;
     Tabuleiro_1[lin][col+2] = 1.0;
     Tabuleiro_1[lin+1][col] = 1.0;
@@ -89,26 +91,25 @@ int main(){
     return 0;
 }
 
-void Aloca_Memoria_Matriz(float **matriz){
-    int **matriz;
+void Aloca_Memoria_Matriz(float ***matriz){
     int i, j;
 
-    // alocacao de memoria para as linhas da matriz
-    matriz = (int **) malloc(N * sizeof(int *));
+    // Alocacao de memoria para as linhas da matriz
+    *matriz = (float **)malloc(N * sizeof(float *));
 
-    // alocacao de memoria para as colunas da matriz
-    for(i = 0; i < N; i++){
-        matriz[i] = (int *) malloc(N * sizeof(int));
+    // Alocacao de memoria para as colunas da matriz
+    for (i = 0; i < N; i++) {
+        (*matriz)[i] = (float *)malloc(N * sizeof(float));
     }
 
-    // inicializacao da matriz com 0
-    for(i = 0; i < N; i++){
-        for(j = 0; j < N; j++){
-            matriz[i][j] = 0.0;
+    // Inicializacao da matriz com 0
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+            (*matriz)[i][j] = 0.0;
         }
     }
-
 }
+
 
 void Desaloca_Memoria_Matriz(float **matriz){
     int i;
