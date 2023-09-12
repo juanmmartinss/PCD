@@ -11,7 +11,9 @@ float get_Values_Neighbors(float** grid, int i, int j);
 
 int main(){
 
-    int Numero_Iteracoes = 1000; // numero de iteracoes
+    int Numero_Iteracoes = 2000; // numero de iteracoes
+
+    int Conta_celulas_vivas = 0; // contador de iteracoes
 
     float **Tabuleiro_1;
     Aloca_Memoria_Matriz(Tabuleiro_1);// alocacao de matriz dinamicamente
@@ -34,6 +36,15 @@ int main(){
     Tabuleiro_1[lin+1][col+1] = 1.0;
     Tabuleiro_1[lin+2][col+1] = 1.0;
 
+    for (int i = 0; i < N; i++){//conta o numero de celulas vivas
+        for (int j = 0; j < N; j++){
+            if (Tabuleiro_1[i][j] != 0.0){
+                Conta_celulas_vivas++;
+            }
+        }
+    }
+
+    printf("Numero de celulas vivas, condição inicial: %d\n", Conta_celulas_vivas);
 
     for (int i = 0; i < Numero_Iteracoes; i++){
         for (int j = 0; j < N; j++){
@@ -60,6 +71,7 @@ int main(){
                 }
             }
         }
+
         float **aux = Tabuleiro_1;
         Tabuleiro_1 = Tabuleiro_2;
         Tabuleiro_2 = aux;
