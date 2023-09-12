@@ -123,6 +123,7 @@ void Desaloca_Memoria_Matriz(float **matriz){
     free(matriz);
 }
 
+
 int getNeighbors(float** grid, int i, int j){//funcao que retorna o numero de vizinhos de uma celula
     int vizinhos = 0;
     int i2, j2;
