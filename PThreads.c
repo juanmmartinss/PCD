@@ -13,7 +13,7 @@ int main(){
 
     int Numero_Iteracoes = 2000; // numero de iteracoes
 
-    int Conta_celulas_vivas = 0; // contador de iteracoes
+    int Conta_celulas_vivas = 0; // contador de celulas vivas
 
     float **Tabuleiro_1;
     Aloca_Memoria_Matriz(Tabuleiro_1);// alocacao de matriz dinamicamente
@@ -44,9 +44,11 @@ int main(){
         }
     }
 
-    printf("Numero de celulas vivas, condição inicial: %d\n", Conta_celulas_vivas);
+    printf("Iteração 0: Numero de celulas vivas: %d\n", Conta_celulas_vivas);
 
-    for (int i = 0; i < Numero_Iteracoes; i++){
+    for (int iteracao = 1; iteracao <= Numero_Iteracoes; iteracao++){
+        int celulas_vivas_nesta_iteracao = 0;
+
         for (int j = 0; j < N; j++){
             for (int k = 0; k < N; k++){
                 int vizinhos = getNeighbors(Tabuleiro_1, j, k);
@@ -54,32 +56,32 @@ int main(){
                     if (vizinhos < 2){
                         Tabuleiro_2[j][k] = 0;
                     }
-                    else if (vizinhos > 4){
+                    else if (vizinhos > 3){
                         Tabuleiro_2[j][k] = 0;
                     }
-                    else if (vizinhos == 2 || vizinhos == 3){
+                    else {
                         Tabuleiro_2[j][k] = 1;
+                        celulas_vivas_nesta_iteracao++;
                     }
                 }
                 else{
                     if (vizinhos == 3){
-                        //novas celulas revivem com a media dos valores da vizinhanca
+                        //novas celulas revivem com a média dos valores da vizinhança
                         float Media_valores_vizinhos = get_Values_Neighbors(Tabuleiro_1, j, k) / 8.0;
                         Tabuleiro_2[j][k] = Media_valores_vizinhos;
-
+                        celulas_vivas_nesta_iteracao++;
                     }
                 }
             }
         }
 
+        // Troca os tabuleiros
         float **aux = Tabuleiro_1;
         Tabuleiro_1 = Tabuleiro_2;
         Tabuleiro_2 = aux;
-    }
 
-    
-    
-    
+        printf("Iteracao %d: Numero de celulas vivas: %d\n", iteracao, celulas_vivas_nesta_iteracao);
+    }
 
     Desaloca_Memoria_Matriz(Tabuleiro_1);// desalocacao de matriz dinamicamente
     Desaloca_Memoria_Matriz(Tabuleiro_2);// desalocacao de matriz dinamicamente
@@ -126,16 +128,16 @@ int getNeighbors(float** grid, int i, int j){//funcao que retorna o numero de vi
 
     for(i2 = i-1; i2 <= i+1; i2++){
         for(j2 = j-1; j2 <= j+1; j2++){
-            if(i2 == i && j2 == j){
+            if(i2 == i && j2 == j){//se a celula for a propria celula, nao conta como vizinho
                 continue;
             }
-            if(i2 < 0 || i2 >= N){
+            if(i2 < 0 || i2 >= N){//se a celula estiver fora do tabuleiro, nao conta como vizinho
                 continue;
             }
-            if(j2 < 0 || j2 >= N){
+            if(j2 < 0 || j2 >= N){//se a celula estiver fora do tabuleiro, nao conta como vizinho
                 continue;
             }
-            if(grid[i2][j2] == 1){
+            if(grid[i2][j2] != 0.0){//se a celula for viva, conta como vizinho
                 vizinhos++;
             }
         }
