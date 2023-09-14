@@ -5,10 +5,14 @@
 #define N 2048
 #define MAX_ITER 2000
 
+typedef struct viz_t{
+    float media;
+    int vivos;
+}viz_t;
+
 void alocarMatriz(float ***matriz);
 void desalocarMatriz(float **matriz);
-int vizinhosVivos(float** grid, int i, int j);
-float mediaVizinhos(float** grid, int i, int j);
+void vizinhos(viz_t *viz, float** grid, int x, int y);
 
 int main(){
 
@@ -45,18 +49,21 @@ int main(){
 
         for (int j = 0; j < N; j++){
             for (int k = 0; k < N; k++){
-                int vizinhos_vivos = vizinhosVivos(grid, j, k);
+                viz_t viz;
+                viz.media = 0.0;
+                viz.vivos = 0;
+                vizinhos(&viz, grid, j, k);
 
                 if (grid[j][k] != 0.0){ // celula atual viva
-                    if (vizinhos_vivos < 2 || vizinhos_vivos > 3) new_grid[j][k] = 0.0;
+                    if (viz.vivos < 2 || viz.vivos > 3) new_grid[j][k] = 0.0;
                     else{
                         new_grid[j][k] = 1.0;
                         celulas_vivas++;
                     }
                 }
                 else{ // celula atual morta
-                    if (vizinhos_vivos == 3){
-                        new_grid[j][k] = mediaVizinhos(grid, j, k);
+                    if (viz.vivos == 3){
+                        new_grid[j][k] = viz.media;
                         celulas_vivas++;
                     }
                     else new_grid[j][k] = 0.0;
@@ -95,8 +102,7 @@ void desalocarMatriz(float **matriz){
 }
 
 
-int vizinhosVivos(float** grid, int x, int y){
-    int vizinhos_vivos = 0;
+void vizinhos(viz_t *viz, float** grid, int x, int y){
     int aux_i, aux_j;
 
     for(int i = x - 1; i <= x + 1; i++){
@@ -111,36 +117,11 @@ int vizinhosVivos(float** grid, int x, int y){
             if(j < 0) j = 2047;
             else if(j >= N) j = 0;
             
-            if(grid[i][j] != 0.0) vizinhos_vivos++; // vizinho vivo
+            if(grid[i][j] != 0.0) viz->vivos++;
+            viz->media += grid[i][j];
             i = aux_i;
             j = aux_j;      
         }
     }
-    return vizinhos_vivos;
-}
-
-
-float mediaVizinhos(float** grid, int x, int y){
-    float soma = 0;
-    int aux_i, aux_j;
-
-    for(int i = x - 1; i <= x + 1; i++){
-        for(int j = y - 1; j <= y + 1; j++){
-            if(i == x && j == y) continue;
-            
-            aux_i = i;
-            aux_j = j;
-            // simular borda infinita
-            if(i < 0) i = 2047;
-            else if(i >= N) i = 0;
-            if(j < 0) j = 2047;
-            else if(j >= N) j = 0;
-
-            soma += grid[i][j];
-            i = aux_i;
-            j = aux_j;
-        }
-    }
-
-    return soma / 8.0;
+    viz->media /= 8.0;
 }
