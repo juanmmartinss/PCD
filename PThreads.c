@@ -1,18 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
-//#include <pthread.h>
+#include <pthread.h>
 
 #define N 2048
 #define MAX_ITER 2000
+#define MAX_THREADS 4
+#define STEP N / MAX_THREADS
 
 typedef struct viz_t{
     float media;
     int vivos;
 }viz_t;
 
+typedef struct args_t{
+    int start;
+    float **grid;
+    float **new_grid;
+}args_t;
+
 void alocarMatriz(float ***matriz);
 void desalocarMatriz(float **matriz);
 void vizinhos(viz_t *viz, float** grid, int x, int y);
+void *threadFunc(void *arg);
 
 int main(){
 
@@ -43,44 +52,62 @@ int main(){
     }
 
     printf("Condicao Inicial: %d\n", celulas_vivas);
+    pthread_t t[MAX_THREADS];
+    args_t args;
+    args.grid = grid;
+    args.new_grid = new_grid;
+    args.start = 0;
+    for(int i = 0; i < MAX_THREADS; i++){
+        pthread_create(&t[i], NULL, threadFunc, (void *) &args);
+        args.start += STEP;
+    }
+    //esperar threads
+    for(int i = 0; i < MAX_THREADS; i++){
+        pthread_join(t[i], NULL);
+    }
+    desalocarMatriz(grid);
+    desalocarMatriz(new_grid);
 
+    pthread_exit(NULL);
+}
+
+
+void *threadFunc(void *arg){
+    args_t *args = (args_t *) arg;
+    int celulas_vivas;
     for (int i = 1; i <= MAX_ITER; i++){
         celulas_vivas = 0;
 
-        for (int j = 0; j < N; j++){
+        for (int j = args->start; j < args->start + STEP; j++){
             for (int k = 0; k < N; k++){
                 viz_t viz;
                 viz.media = 0.0;
                 viz.vivos = 0;
-                vizinhos(&viz, grid, j, k);
+                vizinhos(&viz, args->grid, j, k);
 
-                if (grid[j][k] != 0.0){ // celula atual viva
-                    if (viz.vivos < 2 || viz.vivos > 3) new_grid[j][k] = 0.0;
+                if (args->grid[j][k] != 0.0){ // celula atual viva
+                    if (viz.vivos < 2 || viz.vivos > 3) args->new_grid[j][k] = 0.0;
                     else{
-                        new_grid[j][k] = 1.0;
+                        args->new_grid[j][k] = 1.0;
                         celulas_vivas++;
                     }
                 }
                 else{ // celula atual morta
                     if (viz.vivos == 3){
-                        new_grid[j][k] = viz.media;
+                        args->new_grid[j][k] = viz.media;
                         celulas_vivas++;
                     }
-                    else new_grid[j][k] = 0.0;
+                    else args->new_grid[j][k] = 0.0;
                 }
             }
         }
 
-        float **aux = grid;
-        grid = new_grid;
-        new_grid = aux;
+        float **aux = args->grid;
+        args->grid = args->new_grid;
+        args->new_grid = aux;
         printf("Geracao %d: %d\n", i, celulas_vivas);
     }
-
-    desalocarMatriz(grid);
-    desalocarMatriz(new_grid);
-
-    return 0;
+    pthread_exit(NULL);
 }
 
 
