@@ -50,7 +50,7 @@ int main(){
                 if (grid[j][k] != 0.0){ // celula atual viva
                     if (vizinhos_vivos < 2 || vizinhos_vivos > 3) new_grid[j][k] = 0.0;
                     else{
-                        new_grid[j][k] = grid[j][k];
+                        new_grid[j][k] = 1.0;
                         celulas_vivas++;
                     }
                 }
