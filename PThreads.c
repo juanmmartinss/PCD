@@ -1,170 +1,146 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
+//#include <pthread.h>
 
 #define N 2048
+#define MAX_ITER 2000
 
-void Aloca_Memoria_Matriz(float ***matriz);
-void Desaloca_Memoria_Matriz(float **matriz);
-int getNeighbors(float** grid, int i, int j);
-float get_Values_Neighbors(float** grid, int i, int j);
+void alocarMatriz(float ***matriz);
+void desalocarMatriz(float **matriz);
+int vizinhosVivos(float** grid, int i, int j);
+float mediaVizinhos(float** grid, int i, int j);
 
 int main(){
 
-    int Numero_Iteracoes = 2000; // numero de iteracoes
-
-    int Conta_celulas_vivas = 0; // contador de celulas vivas
-
-    float **Tabuleiro_1;
-    Aloca_Memoria_Matriz(&Tabuleiro_1);// alocacao de matriz dinamicamente
-    float **Tabuleiro_2;
-    Aloca_Memoria_Matriz(&Tabuleiro_2);// alocacao de matriz dinamicamente
+    int celulas_vivas = 0;
+    float **grid, **new_grid;
+    alocarMatriz(&grid);
+    alocarMatriz(&new_grid);
 
     int lin = 1, col = 1;
-
-    Tabuleiro_1[lin][col+1] = 1.0;
-    Tabuleiro_1[lin+1][col+2] = 1.0;
-    Tabuleiro_1[lin+2][col] = 1.0;
-    Tabuleiro_1[lin+2][col+1] = 1.0;
-    Tabuleiro_1[lin+2][col+2] = 1.0;
-
-    //R-pentomino
+    grid[lin][col+1] = 1.0;
+    grid[lin+1][col+2] = 1.0;
+    grid[lin+2][col] = 1.0;
+    grid[lin+2][col+1] = 1.0;
+    grid[lin+2][col+2] = 1.0;
     lin = 10, col = 30;
-    
-    Tabuleiro_1[lin][col+1] = 1.0;
-    Tabuleiro_1[lin][col+2] = 1.0;
-    Tabuleiro_1[lin+1][col] = 1.0;
-    Tabuleiro_1[lin+1][col+1] = 1.0;
-    Tabuleiro_1[lin+2][col+1] = 1.0;
+    grid[lin][col+1] = 1.0;
+    grid[lin][col+2] = 1.0;
+    grid[lin+1][col] = 1.0;
+    grid[lin+1][col+1] = 1.0;
+    grid[lin+2][col+1] = 1.0;
 
-    for (int i = 0; i < N; i++){//conta o numero de celulas vivas
+    for (int i = 0; i < N; i++){
         for (int j = 0; j < N; j++){
-            if (Tabuleiro_1[i][j] != 0.0){
-                Conta_celulas_vivas++;
+            if (grid[i][j] != 0.0){
+                celulas_vivas++;
             }
         }
     }
 
-    printf("Iteração 0: Numero de celulas vivas: %d\n", Conta_celulas_vivas);
+    printf("Condicao Inicial: %d\n", celulas_vivas);
 
-    for (int iteracao = 1; iteracao <= Numero_Iteracoes; iteracao++){
-        int celulas_vivas_nesta_iteracao = 0;
+    for (int i = 1; i <= MAX_ITER; i++){
+        celulas_vivas = 0;
 
         for (int j = 0; j < N; j++){
             for (int k = 0; k < N; k++){
-                int vizinhos = getNeighbors(Tabuleiro_1, j, k);
-                if (Tabuleiro_1[j][k] != 0){
-                    if (vizinhos < 2){
-                        Tabuleiro_2[j][k] = 0;
-                    }
-                    else if (vizinhos > 3){
-                        Tabuleiro_2[j][k] = 0;
-                    }
-                    else {
-                        Tabuleiro_2[j][k] = 1;
-                        celulas_vivas_nesta_iteracao++;
+                int vizinhos_vivos = vizinhosVivos(grid, j, k);
+
+                if (grid[j][k] != 0.0){ // celula atual viva
+                    if (vizinhos_vivos < 2 || vizinhos_vivos > 3) new_grid[j][k] = 0.0;
+                    else{
+                        new_grid[j][k] = grid[j][k];
+                        celulas_vivas++;
                     }
                 }
-                else{
-                    if (vizinhos == 3){
-                        //novas celulas revivem com a média dos valores da vizinhança
-                        float Media_valores_vizinhos = get_Values_Neighbors(Tabuleiro_1, j, k) / 8.0;
-                        Tabuleiro_2[j][k] = Media_valores_vizinhos;
-                        celulas_vivas_nesta_iteracao++;
+                else{ // celula atual morta
+                    if (vizinhos_vivos == 3){
+                        new_grid[j][k] = mediaVizinhos(grid, j, k);
+                        celulas_vivas++;
                     }
+                    else new_grid[j][k] = 0.0;
                 }
             }
         }
 
-        // Troca os tabuleiros
-        float **aux = Tabuleiro_1;
-        Tabuleiro_1 = Tabuleiro_2;
-        Tabuleiro_2 = aux;
-
-        printf("Iteracao %d: Numero de celulas vivas: %d\n", iteracao, celulas_vivas_nesta_iteracao);
+        float **aux = grid;
+        grid = new_grid;
+        new_grid = aux;
+        printf("Geracao %d: %d\n", i, celulas_vivas);
     }
 
-    Desaloca_Memoria_Matriz(Tabuleiro_1);// desalocacao de matriz dinamicamente
-    Desaloca_Memoria_Matriz(Tabuleiro_2);// desalocacao de matriz dinamicamente
+    desalocarMatriz(grid);
+    desalocarMatriz(new_grid);
 
     return 0;
 }
 
-void Aloca_Memoria_Matriz(float ***matriz){
-    int i, j;
 
-    // Alocacao de memoria para as linhas da matriz
+void alocarMatriz(float ***matriz){
     *matriz = (float **)malloc(N * sizeof(float *));
+    for (int i = 0; i < N; i++) (*matriz)[i] = (float *)malloc(N * sizeof(float));
 
-    // Alocacao de memoria para as colunas da matriz
-    for (i = 0; i < N; i++) {
-        (*matriz)[i] = (float *)malloc(N * sizeof(float));
-    }
-
-    // Inicializacao da matriz com 0
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
             (*matriz)[i][j] = 0.0;
         }
     }
 }
 
 
-void Desaloca_Memoria_Matriz(float **matriz){
-    int i;
-
-    // desalocacao de memoria para as linhas da matriz
-    for(i = 0; i < N; i++){
-        free(matriz[i]);
-    }
-
-    // desalocacao de memoria para as colunas da matriz
+void desalocarMatriz(float **matriz){
+    for(int i = 0; i < N; i++) free(matriz[i]);
     free(matriz);
 }
 
 
-int getNeighbors(float** grid, int i, int j){//funcao que retorna o numero de vizinhos de uma celula
-    int vizinhos = 0;
-    int i2, j2;
+int vizinhosVivos(float** grid, int x, int y){
+    int vizinhos_vivos = 0;
+    int aux_i, aux_j;
 
-    for(i2 = i-1; i2 <= i+1; i2++){
-        for(j2 = j-1; j2 <= j+1; j2++){
-            if(i2 == i && j2 == j){//se a celula for a propria celula, nao conta como vizinho
-                continue;
-            }
-            if(i2 < 0 || i2 >= N){//se a celula estiver fora do tabuleiro, nao conta como vizinho
-                continue;
-            }
-            if(j2 < 0 || j2 >= N){//se a celula estiver fora do tabuleiro, nao conta como vizinho
-                continue;
-            }
-            if(grid[i2][j2] != 0.0){//se a celula for viva, conta como vizinho
-                vizinhos++;
-            }
+    for(int i = x - 1; i <= x + 1; i++){
+        for(int j = y - 1; j <= y + 1; j++){
+            if(i == x && j == y) continue;
+            
+            aux_i = i;
+            aux_j = j;
+            // simular borda infinita
+            if(i < 0) i = 2047;
+            else if(i >= N) i = 0;
+            if(j < 0) j = 2047;
+            else if(j >= N) j = 0;
+            
+            if(grid[i][j] != 0.0) vizinhos_vivos++; // vizinho vivo
+            i = aux_i;
+            j = aux_j;      
         }
     }
-
-    return vizinhos;
+    return vizinhos_vivos;
 }
 
-float get_Values_Neighbors(float** grid, int i, int j){//funcao que retorna a soma dos valores dos vizinhos de uma celula
-    float soma = 0;
-    int i2, j2;
 
-    for(i2 = i-1; i2 <= i+1; i2++){
-        for(j2 = j-1; j2 <= j+1; j2++){
-            if(i2 == i && j2 == j){
-                continue;
-            }
-            if(i2 < 0 || i2 >= N){
-                continue;
-            }
-            if(j2 < 0 || j2 >= N){
-                continue;
-            }
-            soma += grid[i2][j2];
+float mediaVizinhos(float** grid, int x, int y){
+    float soma = 0;
+    int aux_i, aux_j;
+
+    for(int i = x - 1; i <= x + 1; i++){
+        for(int j = y - 1; j <= y + 1; j++){
+            if(i == x && j == y) continue;
+            
+            aux_i = i;
+            aux_j = j;
+            // simular borda infinita
+            if(i < 0) i = 2047;
+            else if(i >= N) i = 0;
+            if(j < 0) j = 2047;
+            else if(j >= N) j = 0;
+
+            soma += grid[i][j];
+            i = aux_i;
+            j = aux_j;
         }
     }
 
-    return soma;
+    return soma / 8.0;
 }
