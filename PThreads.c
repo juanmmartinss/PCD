@@ -68,11 +68,12 @@ int main(){
     desalocarMatriz(grid);
     desalocarMatriz(new_grid);
 
-    return 0;
+    pthread_exit(NULL);
 }
 
 
 void *threadFunc(void *arg){
+    printf("entrando na thread");
     args_t *args = (args_t *) arg;
     int celulas_vivas;
     for (int i = 1; i <= MAX_ITER; i++){
