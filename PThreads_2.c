@@ -67,7 +67,7 @@ int main() {
             }
         }
         copiarMatriz(grid, new_grid);
-        for(int k = 0; k < MAX_THREADS; k++) copiarMatriz(args[i].grid, new_grid);
+        for(int k = 0; k < MAX_THREADS; k++) copiarMatriz(args[k].grid, new_grid);
 
         printf("Geracao %d: %d\n", k, celulasVivas(new_grid));
     }
@@ -92,6 +92,7 @@ int celulasVivas(float **grid) {
 
 void *threadFunc(void *arg) {
     //printf("Entrando na thread\n");
+
     args_t *args = (args_t *)arg;
 
     for (int j = args->start; j < args->start + STEP; j++) {
