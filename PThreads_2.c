@@ -78,6 +78,7 @@ int main() {
     pthread_exit(NULL);
 }
 
+
 int celulasVivas(float **grid) {
     int celulas_vivas = 0;
     for (int i = 0; i < N; i++) {
@@ -90,9 +91,8 @@ int celulasVivas(float **grid) {
     return celulas_vivas;
 }
 
-void *threadFunc(void *arg) {
-    //printf("Entrando na thread\n");
 
+void *threadFunc(void *arg) {
     args_t *args = (args_t *)arg;
 
     for (int j = args->start; j < args->start + STEP; j++) {
@@ -102,12 +102,12 @@ void *threadFunc(void *arg) {
             viz.vivos = 0;
             vizinhos(&viz, args->grid, j, k);
 
-            if (args->grid[j][k] != 0.0) { // celula atual viva
+            if (args->grid[j][k] != 0.0) {
                 if (viz.vivos < 2 || viz.vivos > 3)
                     args->new_grid[j][k] = 0.0;
                 else
                     args->new_grid[j][k] = 1.0;
-            } else { // celula atual morta
+            } else {
                 if (viz.vivos == 3)
                     args->new_grid[j][k] = viz.media;
                 else
@@ -117,6 +117,30 @@ void *threadFunc(void *arg) {
     }
 
     pthread_exit(NULL);
+}
+
+
+void vizinhos(viz_t *viz, float **grid, int x, int y) {
+    int aux_i, aux_j;
+
+    for (int i = x - 1; i <= x + 1; i++) {
+        for (int j = y - 1; j <= y + 1; j++) {
+            if (i == x && j == y) continue;
+
+            aux_i = i;
+            aux_j = j;
+            if (i < 0) i = 2047;
+            else if (i >= N) i = 0;
+            if (j < 0) j = 2047;
+            else if (j >= N) j = 0;
+
+            if (grid[i][j] != 0.0) viz->vivos++;
+            viz->media += grid[i][j];
+            i = aux_i;
+            j = aux_j;
+        }
+    }
+    viz->media /= 8.0;
 }
 
 
@@ -144,28 +168,4 @@ void copiarMatriz(float **m1, float **m2){
             m1[i][j] = m2[i][j];
         }
     }
-}
-
-void vizinhos(viz_t *viz, float **grid, int x, int y) {
-    int aux_i, aux_j;
-
-    for (int i = x - 1; i <= x + 1; i++) {
-        for (int j = y - 1; j <= y + 1; j++) {
-            if (i == x && j == y) continue;
-
-            aux_i = i;
-            aux_j = j;
-            // simular borda infinita
-            if (i < 0) i = 2047;
-            else if (i >= N) i = 0;
-            if (j < 0) j = 2047;
-            else if (j >= N) j = 0;
-
-            if (grid[i][j] != 0.0) viz->vivos++;
-            viz->media += grid[i][j];
-            i = aux_i;
-            j = aux_j;
-        }
-    }
-    viz->media /= 8.0;
 }
