@@ -22,6 +22,7 @@ void alocarMatriz(float ***matriz);
 void desalocarMatriz(float **matriz);
 void vizinhos(viz_t *viz, float** grid, int x, int y);
 void *threadFunc(void *arg);
+int celulasVivas(float **grid);
 
 int main(){
 
@@ -44,14 +45,15 @@ int main(){
 
     printf("Condicao Inicial: %d\n", celulasVivas(grid));
     pthread_t t[MAX_THREADS];
+    args_t args[MAX_THREADS];
+    for(int i; i < MAX_THREADS; i++){
+        args[i].grid = grid;
+        args[i].new_grid = new_grid;
+        args[i].start = i * STEP;
+    }
 
     for (int i = 1; i <= MAX_ITER; i++){
-        args_t args[MAX_THREADS];
-
         for(int i = 0; i < MAX_THREADS; i++){
-            args[i].grid = grid;
-            args[i].new_grid = new_grid;
-            args[i].start = i * STEP;
             pthread_create(&t[i], NULL, threadFunc, (void *) &args[i]);
         }
         for(int i = 0; i < MAX_THREADS; i++){
@@ -77,7 +79,7 @@ int main(){
 
 
 int celulasVivas(float **grid){
-    int celulas_vivas = 0
+    int celulas_vivas = 0;
     for (int i = 0; i < N; i++){
         for (int j = 0; j < N; j++){
             if (grid[i][j] != 0.0){
