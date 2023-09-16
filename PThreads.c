@@ -7,8 +7,6 @@
 #define MAX_THREADS 4
 #define STEP N / MAX_THREADS
 
-float **grid, **new_grid;
-
 typedef struct viz_t{
     float media;
     int vivos;
@@ -28,6 +26,7 @@ void *threadFunc(void *arg);
 int main(){
 
     int celulas_vivas = 0;
+    float **grid, **new_grid;
     alocarMatriz(&grid);
     alocarMatriz(&new_grid);
 
@@ -54,10 +53,13 @@ int main(){
 
     printf("Condicao Inicial: %d\n", celulas_vivas);
     pthread_t t[MAX_THREADS];
-    int start = 0;
+    args_t *args = malloc(sizeof(args_t));
+    args->grid = grid;
+    args->new_grid = new_grid;
+    args->start = 0;
     for(int i = 0; i < MAX_THREADS; i++){
-        pthread_create(&t[i], NULL, threadFunc, (void *) start);
-        start += STEP;
+        pthread_create(&t[i], NULL, threadFunc, (void *) args);
+        args->start += STEP;
     }
     //esperar threads
     for(int i = 0; i < MAX_THREADS; i++){
@@ -72,31 +74,31 @@ int main(){
 
 void *threadFunc(void *arg){
     printf("entrando na thread");
-    int start = (int) arg;
+    args_t *args = (args_t *) arg;
     int celulas_vivas;
     for (int i = 1; i <= MAX_ITER; i++){
         celulas_vivas = 0;
 
-        for (int j = start; j < start + STEP; j++){
+        for (int j = args->start; j < args->start + STEP; j++){
             for (int k = 0; k < N; k++){
                 viz_t viz;
                 viz.media = 0.0;
                 viz.vivos = 0;
-                vizinhos(&viz, grid, j, k);
+                vizinhos(&viz, args->grid, j, k);
 
-                if (grid[j][k] != 0.0){ // celula atual viva
-                    if (viz.vivos < 2 || viz.vivos > 3) new_grid[j][k] = 0.0;
+                if (args->grid[j][k] != 0.0){ // celula atual viva
+                    if (viz.vivos < 2 || viz.vivos > 3) args->new_grid[j][k] = 0.0;
                     else{
-                        new_grid[j][k] = 1.0;
+                        args->new_grid[j][k] = 1.0;
                         celulas_vivas++;
                     }
                 }
                 else{ // celula atual morta
                     if (viz.vivos == 3){
-                        new_grid[j][k] = viz.media;
+                        args->new_grid[j][k] = viz.media;
                         celulas_vivas++;
                     }
-                    else new_grid[j][k] = 0.0;
+                    else args->new_grid[j][k] = 0.0;
                 }
             }
         }
