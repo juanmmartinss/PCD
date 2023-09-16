@@ -46,8 +46,11 @@ int main() {
     pthread_t t[MAX_THREADS];
     args_t args[MAX_THREADS];
     for (int i = 0; i < MAX_THREADS; i++) {
-        args[i].grid = grid;
-        args[i].new_grid = new_grid;
+        alocarMatriz(&(args[i].grid));
+        alocarMatriz(&(args[i].new_grid));
+        copiarMatriz(args[i].grid, grid);
+        copiarMatriz(args[i].new_grid, new_grid);
+        
         args[i].start = i * STEP;
     }
 
@@ -70,18 +73,14 @@ int main() {
         //     printf("\n");
         // }
 
-        // for (int i = 0; i < N; i++) {
-        //     for (int j = i * STEP; j < (i * STEP) + STEP; j++) {
-        //         //printf("enra no for");
-
-        //         new_grid[j][i] = args[i].new_grid[j][i];
-        //     }
-        //     printf("print %d\n", i);
-        // }
+        for (int i = 0; i < N; i++) {
+            for (int j = i * STEP; j < (i * STEP) + STEP; j++) {
+                new_grid[j][i] = args[i].new_grid[j][i];
+            }
+            printf("print %d\n", i);
+        }
          
-        //printf("entra aqui");
-
-        //printf("printando uma valor da matriz: %f\n", new_grid[0][0]);
+        printf("entra aqui");
 
         grid = new_grid;
         printf("Geracao %d: %d\n", i, celulasVivas(new_grid));
@@ -147,6 +146,14 @@ void alocarMatriz(float ***matriz) {
 void desalocarMatriz(float **matriz) {
     for (int i = 0; i < N; i++) free(matriz[i]);
     free(matriz);
+}
+
+void copiarMatriz(float **m1, float **m2){
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            m1[i][j] = m2[i][j];
+        }
+    }
 }
 
 void vizinhos(viz_t *viz, float **grid, int x, int y) {
