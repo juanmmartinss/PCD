@@ -68,7 +68,7 @@ int main(){
     desalocarMatriz(grid);
     desalocarMatriz(new_grid);
 
-    pthread_exit(NULL);
+    return 0;
 }
 
 
