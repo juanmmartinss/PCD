@@ -59,26 +59,16 @@ int main() {
         for (int i = 0; i < MAX_THREADS; i++) pthread_create(&t[i], NULL, threadFunc, (void *)&args[i]);
         for (int i = 0; i < MAX_THREADS; i++) pthread_join(t[i], NULL);
 
-        //printando uma matriz
-        // for(int i = 0; i < 512; i++){
-        //     for(int j = 0; j < 512; j++){
-        //         if(args[0].grid[i][j] != 0.0)
-        //             printf("%f ", args[0].grid[i][j]);
-        //     }
-        // }
-
         for(int k = 0; k < MAX_THREADS; k++){
             for (int i = 0; i < N; i++) {
                 for (int j = k * STEP; j < (k * STEP) + STEP; j++) {
                     new_grid[j][i] = args[k].new_grid[j][i];
                 }
-                printf("print %d\n", k);
             }
         }
-         
-        printf("entra aqui");
+        copiarMatriz(grid, new_grid);
+        for(int k = 0; k < MAX_THREADS; k++) copiarMatriz(args[i].grid, new_grid);
 
-        grid = new_grid;
         printf("Geracao %d: %d\n", k, celulasVivas(new_grid));
     }
 
