@@ -62,17 +62,18 @@ int main() {
         //printando uma matriz
         // for(int i = 0; i < 512; i++){
         //     for(int j = 0; j < 512; j++){
-        //         if(args[0].new_grid[i][j] != 0.0)
-        //             printf("%f ", args[0].new_grid[i][j]);
+        //         if(args[0].grid[i][j] != 0.0)
+        //             printf("%f ", args[0].grid[i][j]);
         //     }
-        //     printf("\n");
         // }
 
-        for (int i = 0; i < N; i++) {
-            for (int j = i * STEP; j < (i * STEP) + STEP; j++) {
-                new_grid[j][i] = args[i].new_grid[j][i];
+        for(int k = 0; k < MAX_THREADS; k++){
+            for (int i = 0; i < N; i++) {
+                for (int j = k * STEP; j < (k * STEP) + STEP; j++) {
+                    new_grid[j][i] = args[k].new_grid[j][i];
+                }
+                printf("print %d\n", k);
             }
-            printf("print %d\n", i);
         }
          
         printf("entra aqui");
