@@ -53,13 +53,13 @@ int main(){
 
     printf("Condicao Inicial: %d\n", celulas_vivas);
     pthread_t t[MAX_THREADS];
-    args_t args;
-    args.grid = grid;
-    args.new_grid = new_grid;
-    args.start = 0;
+    args_t *args = malloc(sizeof(args_t));
+    args->grid = grid;
+    args->new_grid = new_grid;
+    args->start = 0;
     for(int i = 0; i < MAX_THREADS; i++){
-        pthread_create(&t[i], NULL, threadFunc, (void *) &args);
-        args.start += STEP;
+        pthread_create(&t[i], NULL, threadFunc, (void *) args);
+        args->start += STEP;
     }
     //esperar threads
     for(int i = 0; i < MAX_THREADS; i++){
