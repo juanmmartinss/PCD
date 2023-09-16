@@ -20,6 +20,7 @@ typedef struct args_t{
 
 void alocarMatriz(float ***matriz);
 void desalocarMatriz(float **matriz);
+void copiarMatriz(float **m1, float **m2);
 void vizinhos(viz_t *viz, float **grid, int x, int y);
 void *threadFunc(void *arg);
 int celulasVivas(float **grid);
@@ -54,15 +55,9 @@ int main() {
         args[i].start = i * STEP;
     }
 
-    for (int i = 1; i <= MAX_ITER; i++) {
-        for (int i = 0; i < MAX_THREADS; i++) {
-            pthread_create(&t[i], NULL, threadFunc, (void *)&args[i]);
-        }
-        for (int i = 0; i < MAX_THREADS; i++) {
-            //printf("Esperando thread %d\n", i);
-            pthread_join(t[i], NULL);
-            //printf("Thread %d finalizada\n", i);
-        }
+    for (int k = 1; k <= MAX_ITER; k++) {
+        for (int i = 0; i < MAX_THREADS; i++) pthread_create(&t[i], NULL, threadFunc, (void *)&args[i]);
+        for (int i = 0; i < MAX_THREADS; i++) pthread_join(t[i], NULL);
 
         //printando uma matriz
         // for(int i = 0; i < 512; i++){
@@ -83,7 +78,7 @@ int main() {
         printf("entra aqui");
 
         grid = new_grid;
-        printf("Geracao %d: %d\n", i, celulasVivas(new_grid));
+        printf("Geracao %d: %d\n", k, celulasVivas(new_grid));
     }
 
     desalocarMatriz(grid);
@@ -132,6 +127,7 @@ void *threadFunc(void *arg) {
     pthread_exit(NULL);
 }
 
+
 void alocarMatriz(float ***matriz) {
     *matriz = (float **)malloc(N * sizeof(float *));
     for (int i = 0; i < N; i++) (*matriz)[i] = (float *)malloc(N * sizeof(float));
@@ -143,10 +139,12 @@ void alocarMatriz(float ***matriz) {
     }
 }
 
+
 void desalocarMatriz(float **matriz) {
     for (int i = 0; i < N; i++) free(matriz[i]);
     free(matriz);
 }
+
 
 void copiarMatriz(float **m1, float **m2){
     for (int i = 0; i < N; i++) {
