@@ -61,21 +61,30 @@ int main() {
             //printf("Thread %d finalizada\n", i);
         }
 
-        for (int i = 0; i < N; i++) {
-            for (int j = i * STEP; j < (i * STEP) + STEP; j++) {
-                //printf("enra no for");
+        //printando uma matriz
+        // for(int i = 0; i < 512; i++){
+        //     for(int j = 0; j < 512; j++){
+        //         if(args[0].new_grid[i][j] != 0.0)
+        //             printf("%f ", args[0].new_grid[i][j]);
+        //     }
+        //     printf("\n");
+        // }
 
-                new_grid[j][i] = args[i].new_grid[j][i];
-            }
-            printf("print %d\n", i);
-        }
+        // for (int i = 0; i < N; i++) {
+        //     for (int j = i * STEP; j < (i * STEP) + STEP; j++) {
+        //         //printf("enra no for");
+
+        //         new_grid[j][i] = args[i].new_grid[j][i];
+        //     }
+        //     printf("print %d\n", i);
+        // }
          
         //printf("entra aqui");
 
         //printf("printando uma valor da matriz: %f\n", new_grid[0][0]);
 
         grid = new_grid;
-        printf("Geracao %d: %d\n", i, celulasVivas(grid));
+        printf("Geracao %d: %d\n", i, celulasVivas(new_grid));
     }
 
     desalocarMatriz(grid);
@@ -97,7 +106,7 @@ int celulasVivas(float **grid) {
 }
 
 void *threadFunc(void *arg) {
-    printf("Entrando na thread\n");
+    //printf("Entrando na thread\n");
     args_t *args = (args_t *)arg;
 
     for (int j = args->start; j < args->start + STEP; j++) {
