@@ -4,7 +4,7 @@
 //#include <pthread.h>
 
 #define N 2048
-#define MAX_ITER 10
+#define MAX_ITER 100
 
 typedef struct viz_t{
     float media;

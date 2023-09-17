@@ -4,7 +4,7 @@
 #include <sys/time.h>
 
 #define N 2048
-#define MAX_ITER 10
+#define MAX_ITER 100
 #define MAX_THREADS 4
 #define STEP (N / MAX_THREADS)
 

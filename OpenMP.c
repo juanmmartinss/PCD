@@ -5,7 +5,7 @@
 //#include <pthread.h>
 
 #define N 2048
-#define MAX_ITER 10
+#define MAX_ITER 100
 
 typedef struct viz_t{
     float media;
@@ -59,29 +59,30 @@ int main(){
     for (int i = 1; i <= MAX_ITER; i++){
         celulas_vivas = 0;
 
-        #pragma omp parallel for reduction(+:celulas_vivas)
-        for (int j = 0; j < N; j++){
-            for (int k = 0; k < N; k++){
-                viz_t viz;
-                viz.media = 0.0;
-                viz.vivos = 0;
-                vizinhos(&viz, grid, j, k);
+            #pragma omp parallel for reduction(+:celulas_vivas)
+            for (int j = 0; j < N; j++){
+                for (int k = 0; k < N; k++){
+                    viz_t viz;
+                    viz.media = 0.0;
+                    viz.vivos = 0;
+                    vizinhos(&viz, grid, j, k);
 
-                if (grid[j][k] != 0.0){ // celula atual viva
-                    if (viz.vivos < 2 || viz.vivos > 3) new_grid[j][k] = 0.0;
-                    else{
-                        new_grid[j][k] = 1.0;
-                        celulas_vivas++;
+                    if (grid[j][k] != 0.0){ // celula atual viva
+                        if (viz.vivos < 2 || viz.vivos > 3) new_grid[j][k] = 0.0;
+                        else{
+                            new_grid[j][k] = 1.0;
+                            celulas_vivas++;
+                        }
+                    }
+                    else{ // celula atual morta
+                        if (viz.vivos == 3){
+                            new_grid[j][k] = viz.media;
+                            celulas_vivas++;
+                        }
+                        else new_grid[j][k] = 0.0;
                     }
                 }
-                else{ // celula atual morta
-                    if (viz.vivos == 3){
-                        new_grid[j][k] = viz.media;
-                        celulas_vivas++;
-                    }
-                    else new_grid[j][k] = 0.0;
-                }
-            }
+            
         }
 
         float **aux = grid;
@@ -125,7 +126,7 @@ void desalocarMatriz(float **matriz){
 void vizinhos(viz_t *viz, float** grid, int x, int y){
     int aux_i, aux_j;
 
-    #pragma omp parallel for private(aux_i, aux_j) shared(viz)
+    //#pragma omp parallel for private(aux_i, aux_j) shared(viz)
     for(int i = x - 1; i <= x + 1; i++){
         for(int j = y - 1; j <= y + 1; j++){
             if(i == x && j == y) continue;
