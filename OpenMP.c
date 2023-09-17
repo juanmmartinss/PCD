@@ -21,7 +21,7 @@ int main(){
     struct timeval start_time, end_time;
     double elapsed_time;
 
-    int num_threads = 4;  // Defina o número desejado de threads
+    int num_threads = 6;  // Defina o número desejado de threads
     omp_set_num_threads(num_threads);
 
     int celulas_vivas = 0;
@@ -125,6 +125,11 @@ void desalocarMatriz(float **matriz){
 
 void vizinhos(viz_t *viz, float** grid, int x, int y){
     int aux_i, aux_j;
+
+
+    // int num_threads = omp_get_num_threads();         
+    
+    // printf("Número de threads: %d\n", num_threads);
 
     //#pragma omp parallel for private(aux_i, aux_j) shared(viz)
     for(int i = x - 1; i <= x + 1; i++){

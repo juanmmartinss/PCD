@@ -5,7 +5,7 @@
 
 #define N 2048
 #define MAX_ITER 100
-#define MAX_THREADS 4
+#define MAX_THREADS 6
 #define STEP (N / MAX_THREADS)
 
 typedef struct viz_t{
