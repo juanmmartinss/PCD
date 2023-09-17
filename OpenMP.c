@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
 #include <sys/time.h>
 //#include <pthread.h>
 
@@ -19,6 +20,9 @@ int main(){
 
     struct timeval start_time, end_time;
     double elapsed_time;
+
+    int num_threads = 4;  // Defina o número desejado de threads
+    omp_set_num_threads(num_threads);
 
     int celulas_vivas = 0;
     float **grid, **new_grid;
@@ -50,9 +54,12 @@ int main(){
 
     printf("Condicao Inicial: %d\n", celulas_vivas);
 
+
+    
     for (int i = 1; i <= MAX_ITER; i++){
         celulas_vivas = 0;
 
+        #pragma omp parallel for reduction(+:celulas_vivas)
         for (int j = 0; j < N; j++){
             for (int k = 0; k < N; k++){
                 viz_t viz;
@@ -118,6 +125,7 @@ void desalocarMatriz(float **matriz){
 void vizinhos(viz_t *viz, float** grid, int x, int y){
     int aux_i, aux_j;
 
+    #pragma omp parallel for private(aux_i, aux_j) shared(viz)
     for(int i = x - 1; i <= x + 1; i++){
         for(int j = y - 1; j <= y + 1; j++){
             if(i == x && j == y) continue;
@@ -130,7 +138,11 @@ void vizinhos(viz_t *viz, float** grid, int x, int y){
             if(j < 0) j = 2047;
             else if(j >= N) j = 0;
             
-            if(grid[i][j] != 0.0) viz->vivos++;
+            if(grid[i][j] != 0.0){
+                //#pragma omp atomic
+                viz->vivos++;
+            }
+            //#pragma omp atomic
             viz->media += grid[i][j];
             i = aux_i;
             j = aux_j;      

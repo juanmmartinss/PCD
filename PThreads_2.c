@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <sys/time.h>
 
 #define N 2048
-#define MAX_ITER 2000
+#define MAX_ITER 10
 #define MAX_THREADS 4
 #define STEP (N / MAX_THREADS)
 
@@ -26,6 +27,10 @@ void *threadFunc(void *arg);
 int celulasVivas(float **grid);
 
 int main() {
+
+    struct timeval start_time, end_time;
+    double elapsed_time;
+
     float **grid, **new_grid;
     alocarMatriz(&grid);
     alocarMatriz(&new_grid);
@@ -42,6 +47,8 @@ int main() {
     grid[lin + 1][col] = 1.0;
     grid[lin + 1][col + 1] = 1.0;
     grid[lin + 2][col + 1] = 1.0;
+
+    gettimeofday(&start_time, NULL);
 
     printf("Condicao Inicial: %d\n", celulasVivas(grid));
     pthread_t t[MAX_THREADS];
@@ -71,6 +78,13 @@ int main() {
 
         printf("Geracao %d: %d\n", k, celulasVivas(new_grid));
     }
+
+    gettimeofday(&end_time, NULL);
+
+    elapsed_time = (end_time.tv_sec - start_time.tv_sec) + 
+                   (end_time.tv_usec - start_time.tv_usec) / 1000000.0;
+
+    printf("Tempo total de execução: %lf segundos\n", elapsed_time);
 
     desalocarMatriz(grid);
     desalocarMatriz(new_grid);
