@@ -128,12 +128,6 @@ void desalocarMatriz(float **matriz){
 void vizinhos(viz_t *viz, float** grid, int x, int y){
     int aux_i, aux_j;
 
-
-    // int num_threads = omp_get_num_threads();         
-    
-    // printf("Número de threads: %d\n", num_threads);
-
-    //#pragma omp parallel for private(aux_i, aux_j) shared(viz)
     for(int i = x - 1; i <= x + 1; i++){
         for(int j = y - 1; j <= y + 1; j++){
             if(i == x && j == y) continue;
@@ -146,11 +140,7 @@ void vizinhos(viz_t *viz, float** grid, int x, int y){
             if(j < 0) j = 2047;
             else if(j >= N) j = 0;
             
-            if(grid[i][j] != 0.0){
-                //#pragma omp atomic
-                viz->vivos++;
-            }
-            //#pragma omp atomic
+            if(grid[i][j] != 0.0) viz->vivos++;
             viz->media += grid[i][j];
             i = aux_i;
             j = aux_j;      

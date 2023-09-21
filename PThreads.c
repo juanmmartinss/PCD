@@ -73,13 +73,9 @@ int main() {
                 }
             }
         }
-        // copiarMatriz(grid, new_grid);
         for(int k = 0; k < MAX_THREADS; k++) copiarMatriz(args[k].grid, grid);
-
         printf("Geracao %d: %d\n", k, celulasVivas(grid));
     }
-
-    //printf("Condicao Final: %d\n", celulasVivas(grid));
 
     gettimeofday(&end_time, NULL);
 
