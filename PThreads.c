@@ -4,8 +4,8 @@
 #include <sys/time.h>
 
 #define N 2048
-#define MAX_ITER 100
-#define MAX_THREADS 6
+#define MAX_ITER 2000
+#define MAX_THREADS 8
 #define STEP (N / MAX_THREADS)
 
 typedef struct viz_t{
@@ -69,17 +69,21 @@ int main() {
         for(int k = 0; k < MAX_THREADS; k++){
             for (int i = 0; i < N; i++) {
                 for (int j = k * STEP; j < (k * STEP) + STEP; j++) {
-                    new_grid[j][i] = args[k].new_grid[j][i];
+                    grid[j][i] = args[k].new_grid[j][i];
                 }
             }
         }
-        copiarMatriz(grid, new_grid);
-        for(int k = 0; k < MAX_THREADS; k++) copiarMatriz(args[k].grid, new_grid);
+        // copiarMatriz(grid, new_grid);
+        for(int k = 0; k < MAX_THREADS; k++) copiarMatriz(args[k].grid, grid);
 
-        printf("Geracao %d: %d\n", k, celulasVivas(new_grid));
+        printf("Geracao %d: %d\n", k, celulasVivas(grid));
     }
 
+    //printf("Condicao Final: %d\n", celulasVivas(grid));
+
     gettimeofday(&end_time, NULL);
+
+    printf("-------Execução Pthread finalizada(8 Threads)-------\n");
 
     elapsed_time = (end_time.tv_sec - start_time.tv_sec) + 
                    (end_time.tv_usec - start_time.tv_usec) / 1000000.0;

@@ -4,7 +4,7 @@
 //#include <pthread.h>
 
 #define N 2048
-#define MAX_ITER 100
+#define MAX_ITER 2000
 
 typedef struct viz_t{
     float media;
@@ -84,6 +84,8 @@ int main(){
     }
 
     gettimeofday(&end_time, NULL);
+
+    printf("-------Execução serial finalizada-------");
 
     elapsed_time = (end_time.tv_sec - start_time.tv_sec) + 
                    (end_time.tv_usec - start_time.tv_usec) / 1000000.0;

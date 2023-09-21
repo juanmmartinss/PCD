@@ -5,7 +5,7 @@
 //#include <pthread.h>
 
 #define N 2048
-#define MAX_ITER 100
+#define MAX_ITER 2000
 
 typedef struct viz_t{
     float media;
@@ -21,7 +21,7 @@ int main(){
     struct timeval start_time, end_time;
     double elapsed_time;
 
-    int num_threads = 6;  // Defina o número desejado de threads
+    int num_threads = 8;  // Defina o número desejado de threads
     omp_set_num_threads(num_threads);
 
     int celulas_vivas = 0;
@@ -92,6 +92,8 @@ int main(){
     }
 
     gettimeofday(&end_time, NULL);
+
+    printf("-------Execução OpenMP finalizada(8 Threads)-------\n");
 
     elapsed_time = (end_time.tv_sec - start_time.tv_sec) + 
                    (end_time.tv_usec - start_time.tv_usec) / 1000000.0;
