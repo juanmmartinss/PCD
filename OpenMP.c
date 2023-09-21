@@ -6,7 +6,7 @@
 
 #define N 2048
 #define MAX_ITER 2000
-#define MAX_THREADS 2
+#define MAX_THREADS 8
 
 typedef struct viz_t{
     float media;
