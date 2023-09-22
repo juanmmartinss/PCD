@@ -1,3 +1,9 @@
+/*
+Daniel Ferreira Martins 156369
+Juan Marcos Martins 156470
+Savio Augusto Machado Araujo 156584
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -5,8 +11,11 @@
 
 #define N 2048
 #define MAX_ITER 2000
-#define MAX_THREADS 8
+#define MAX_THREADS 2
 #define STEP (N / MAX_THREADS)
+#define ANSI_YELLOW "\x1b[33m"
+#define ANSI_GREEN "\x1b[32m"
+#define ANSI_WHITE "\x1b[37m"
 
 typedef struct viz_t{
     float media;
@@ -25,6 +34,7 @@ void copiarMatriz(float **m1, float **m2);
 void vizinhos(viz_t *viz, float **grid, int x, int y);
 void *threadFunc(void *arg);
 int celulasVivas(float **grid);
+void printSubgrid(float **grid);
 
 int main() {
 
@@ -75,6 +85,8 @@ int main() {
         }
         for(int k = 0; k < MAX_THREADS; k++) copiarMatriz(args[k].grid, grid);
         printf("Geracao %d: %d\n", k, celulasVivas(grid));
+        printSubgrid(grid);
+        system("cls");
     }
 
     gettimeofday(&end_time, NULL);
@@ -158,6 +170,20 @@ void vizinhos(viz_t *viz, float **grid, int x, int y) {
 }
 
 
+void printSubgrid(float **grid) {
+    
+    for (int i = 0; i < 50; i++) {
+        for (int j = 0; j < 50; j++){
+            int simb = (int)(grid[i][j] * 10);
+            if(simb == 0) printf(".  ");
+            else if(simb < 10) printf(ANSI_YELLOW "o  " ANSI_WHITE);
+            else if(simb == 10) printf(ANSI_GREEN "o  " ANSI_WHITE);
+        }
+        printf("\n");
+    }
+}
+
+
 void alocarMatriz(float ***matriz) {
     *matriz = (float **)malloc(N * sizeof(float *));
     for (int i = 0; i < N; i++) (*matriz)[i] = (float *)malloc(N * sizeof(float));
@@ -183,3 +209,4 @@ void copiarMatriz(float **m1, float **m2){
         }
     }
 }
+

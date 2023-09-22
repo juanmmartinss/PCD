@@ -6,7 +6,10 @@
 
 #define N 2048
 #define MAX_ITER 2000
-#define MAX_THREADS 8
+#define MAX_THREADS 2
+#define ANSI_YELLOW "\x1b[33m"
+#define ANSI_GREEN "\x1b[32m"
+#define ANSI_WHITE "\x1b[37m"
 
 typedef struct viz_t{
     float media;
@@ -16,6 +19,7 @@ typedef struct viz_t{
 void alocarMatriz(float ***matriz);
 void desalocarMatriz(float **matriz);
 void vizinhos(viz_t *viz, float** grid, int x, int y);
+void printSubgrid(float **grid);
 
 int main(){
 
@@ -89,6 +93,8 @@ int main(){
         grid = new_grid;
         new_grid = aux;
         printf("Geracao %d: %d\n", i, celulas_vivas);
+        printSubgrid(grid);
+        system("cls");
     }
 
     gettimeofday(&end_time, NULL);
@@ -147,4 +153,18 @@ void vizinhos(viz_t *viz, float** grid, int x, int y){
         }
     }
     viz->media /= 8.0;
+}
+
+
+void printSubgrid(float **grid) {
+    
+    for (int i = 0; i < 50; i++) {
+        for (int j = 0; j < 50; j++){
+            int simb = (int)(grid[i][j] * 10);
+            if(simb == 0) printf(".  ");
+            else if(simb < 10) printf(ANSI_YELLOW "o  " ANSI_WHITE);
+            else if(simb == 10) printf(ANSI_GREEN "o  " ANSI_WHITE);
+        }
+        printf("\n");
+    }
 }
