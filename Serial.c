@@ -5,10 +5,13 @@
 
 #define N 2048
 #define MAX_ITER 2000
+
+//cores pro print da submatriz 50x50
 #define ANSI_YELLOW "\x1b[33m"
 #define ANSI_GREEN "\x1b[32m"
 #define ANSI_WHITE "\x1b[37m"
 
+// struct para os valores dos vizinhos de uma célula
 typedef struct viz_t{
     float media;
     int vivos;
@@ -85,8 +88,10 @@ int main(){
         grid = new_grid;
         new_grid = aux;
         printf("Geracao %d: %d\n", i, celulas_vivas);
-        printSubgrid(grid);
-        system("cls");
+
+        //printar submatriz a cada geração
+        /* printSubgrid(grid);
+        system("cls"); */
     }
 
     gettimeofday(&end_time, NULL);
@@ -102,24 +107,6 @@ int main(){
     desalocarMatriz(new_grid);
 
     return 0;
-}
-
-
-void alocarMatriz(float ***matriz){
-    *matriz = (float **)malloc(N * sizeof(float *));
-    for (int i = 0; i < N; i++) (*matriz)[i] = (float *)malloc(N * sizeof(float));
-
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            (*matriz)[i][j] = 0.0;
-        }
-    }
-}
-
-
-void desalocarMatriz(float **matriz){
-    for(int i = 0; i < N; i++) free(matriz[i]);
-    free(matriz);
 }
 
 
@@ -159,4 +146,22 @@ void printSubgrid(float **grid) {
         }
         printf("\n");
     }
+}
+
+
+void alocarMatriz(float ***matriz){
+    *matriz = (float **)malloc(N * sizeof(float *));
+    for (int i = 0; i < N; i++) (*matriz)[i] = (float *)malloc(N * sizeof(float));
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            (*matriz)[i][j] = 0.0;
+        }
+    }
+}
+
+
+void desalocarMatriz(float **matriz){
+    for(int i = 0; i < N; i++) free(matriz[i]);
+    free(matriz);
 }
